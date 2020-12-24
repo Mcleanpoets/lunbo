@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "css": "stylus -w stylus -o css",
+    "css2styl": "stylus --css css stylus"
+  }
+}

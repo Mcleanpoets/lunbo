@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>图片视频轮播</title>
+    <link rel="stylesheet" href="./css/index.css" />
+    <link rel="stylesheet" href="./js/swiper/swiper.css" />
+    <script src="./js/jquery-3.2.1.js"></script>
+    <script src="./js/swiper/swiper.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="content-box">
+        <div class="swiper-container">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+              <img draggable="false" src="./images/loop1.jpg" alt="loop1" />
+            </div>
+            <div class="swiper-slide">
+              <img draggable="false" src="./images/loop2.jpg" alt="loop2" />
+            </div>
+            <div class="swiper-slide">
+              <img draggable="false" src="./images/loop3.jpg" alt="loop3" />
+            </div>
+          </div>
+          <!-- Add Pagination -->
+          <div class="swiper-pagination"></div>
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+        </div>
+        <div class="video-container">
+          <video id="myVideo" width="100%" muted>
+            <source src="./videos/1.mp4" type="video/mp4" />
+            您的浏览器不支持 video 标签。
+          </video>
+        </div>
+      </div>
+    </div>
+    <script src="./js/playVideo.js"></script>
+    <script>
+      $(document).ready(function () {
+        // 轮播参数
+        var lunbo_options = {
+          // 轮播图的方向，也可以是vertical方向
+          direction: "horizontal",
+          // 自动播放时间
+          autoplay: {
+            autoplay: false,
+            // 时间间隔
+            delay: 3000,
+          },
+          // 播放的速度
+          speed: 2000,
+          centeredSlides: true, //页面居中
+          pagination: {
+            el: ".swiper-pagination",
+          },
+          navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          },
+          on: {
+            reachEnd: function () {
+              // 停止轮播
+              swiper.autoplay.stop();
+              setTimeout(function () {
+                // 切换到右边视频
+                slideContentBox("right");
+                // 切换视频播放
+                playVideo()
+              }, lunbo_options.autoplay.delay + lunbo_options.speed);
+            },
+          },
+        };
+
+        // 播放列表
+        var playlist = ["1.mp4", "2.mp4"];
+        // 视频对象
+        var vid = new PlayVideo("myVideo", playlist);
+        //轮播对象
+        var swiper = new Swiper(".swiper-container", lunbo_options);
+
+        // 左右切换函数
+        function slideContentBox(direction) {
+          // 切换到右边
+          if (direction === "right")
+            $(".content-box").css("transform", "translateX(-50%)");
+          else $(".content-box").css("transform", "translateX(0)");
+        }
+
+        // 开始播放
+        function playVideo() {
+          // 切换视频播放，切换过程2s
+          setTimeout(function () {
+            vid.play()
+          }, 2000);
+        }
+
+        // 播放列表完后，切回左边
+        vid.onEnd = function () {
+          slideContentBox("left");
+          // 切换回第一张
+          swiper.slideTo(0,0)
+          // 切换过程2s
+          setTimeout(function () {
+            // 重置视频
+            vid.reset()
+            // 切换轮播，
+            swiper.autoplay.start();
+          }, 2000);
+        };
+      });
+    </script>
+  </body>
+</html>

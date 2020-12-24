@@ -1,0 +1,31 @@
+@import "common_mixin.styl"
+@import "reset.styl"
+
+// 最外层
+.container
+  width 100%
+  height 100%
+  overflow hidden
+  .content-box
+    width 200%
+    height 100%
+    display flex
+    transition transform 2s ease-in-out
+    transform translateX(0)
+    background-color #000
+    .swiper-container
+      margin 0
+      width 50%
+      height 100%
+      .swiper-slide
+        display flex
+        justify-content center
+        align-items center
+        img
+          width 100%
+    .video-container
+      width 50%
+      height 100%
+      display flex
+      justify-content center
+      align-items center
