@@ -15,10 +15,7 @@ function PlayVideo(idOfDom, filenames, isLoop) {
     // 是否循环播放，默认不自动
     this.isLoop = isLoop || false;
     // 初始化列表
-    this.playlist = [];
-    for (var i = 0, filename; (filename = filenames[i++]); ) {
-      this.playlist.push("./videos/" + filename);
-    }
+    this.playlist = filenames;
   } else {
     // 如果没有播放列表
     throw new Error("没有播放列表！");
