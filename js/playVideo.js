@@ -15,7 +15,15 @@ function PlayVideo(idOfDom, filenames, isLoop) {
     // 是否循环播放，默认不自动
     this.isLoop = isLoop || false;
     // 初始化列表
-    this.playlist = filenames;
+    this.playlist = getPlayList(filenames);
+
+    function getPlayList(filenames) {
+      var arr = [];
+      for (var i = 0, filename; (filename = filenames[i++]); ) {
+        arr.push(filename.replace(/^\.?\//, location.href));
+      }
+      return arr;
+    }
   } else {
     // 如果没有播放列表
     throw new Error("没有播放列表！");
@@ -63,7 +71,10 @@ PlayVideo.prototype.play = function (index) {
   // 默认播放第一条
   index = index || 0;
   this.currentIndex = index;
-  this.vid.src = this.playlist[index];
+  // 防止闪屏
+  var currentSrc = this.playlist[index];
+  if (this.vid.src !== currentSrc) this.vid.src = currentSrc;
+  // 播放
   this.vid.play();
   // 播放完后
   this.vid.onended = this.playNext.bind(this);

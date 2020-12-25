@@ -30,13 +30,12 @@
             </div>
           </div>
           <!-- Add Pagination -->
-          <div class="swiper-pagination"></div>
-          <div class="swiper-button-next"></div>
-          <div class="swiper-button-prev"></div>
+<!--          <div class="swiper-pagination"></div>-->
+<!--          <div class="swiper-button-next"></div>-->
+<!--          <div class="swiper-button-prev"></div>-->
         </div>
         <div class="video-container">
-          <video id="myVideo" width="100%" muted>
-            <source src="./videos/1.mp4" type="video/mp4" />
+          <video id="myVideo" width="100%"  src="./videos/1.mp4" type="video/mp4" muted>
             您的浏览器不支持 video 标签。
           </video>
         </div>
@@ -58,13 +57,13 @@
           // 播放的速度
           speed: 2000,
           centeredSlides: true, //页面居中
-          pagination: {
-            el: ".swiper-pagination",
-          },
-          navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-          },
+          // pagination: {
+          //   el: ".swiper-pagination",
+          // },
+          // navigation: {
+          //   nextEl: ".swiper-button-next",
+          //   prevEl: ".swiper-button-prev",
+          // },
           on: {
             reachEnd: function () {
               // 停止轮播
@@ -80,7 +79,7 @@
         };
 
         // 播放列表
-        var playlist = ["./videos/1.mp4", "./videos/2.mp4"];
+        var playlist = ["/videos/1.mp4", "/videos/2.mp4"];
         // 视频对象
         var vid = new PlayVideo("myVideo",playlist);
         //轮播对象
