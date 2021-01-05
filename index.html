@@ -16,26 +16,30 @@
 
   <body>
     <div class="container">
+      <div class="operator">
+        <a class="button-prev hide"></a>
+        <a class="button-next"></a>
+      </div>
       <div class="content-box">
         <div class="swiper-container">
           <div class="swiper-wrapper">
-            <div class="swiper-slide">
-              <img draggable="false" src="./images/loop1.jpg" alt="loop1" />
-            </div>
-            <div class="swiper-slide">
-              <img draggable="false" src="./images/loop2.jpg" alt="loop2" />
-            </div>
-            <div class="swiper-slide">
-              <img draggable="false" src="./images/loop3.jpg" alt="loop3" />
-            </div>
+            <!--            <div class="swiper-slide">-->
+            <!--              <img draggable="false" src="./images/loop1.jpg" alt="loop1" />-->
+            <!--            </div>-->
+            <!--            <div class="swiper-slide">-->
+            <!--              <img draggable="false" src="./images/loop2.jpg" alt="loop2" />-->
+            <!--            </div>-->
+            <!--            <div class="swiper-slide">-->
+            <!--              <img draggable="false" src="./images/loop3.jpg" alt="loop3" />-->
+            <!--            </div>-->
           </div>
           <!-- Add Pagination -->
-<!--          <div class="swiper-pagination"></div>-->
-<!--          <div class="swiper-button-next"></div>-->
-<!--          <div class="swiper-button-prev"></div>-->
+          <!--          <div class="swiper-pagination"></div>-->
+          <!--          <div class="swiper-button-next"></div>-->
+          <!--          <div class="swiper-button-prev"></div>-->
         </div>
         <div class="video-container">
-          <video id="myVideo" width="100%"  src="./videos/1.mp4" type="video/mp4" muted>
+          <video id="myVideo" width="100%" type="video/mp4">
             您的浏览器不支持 video 标签。
           </video>
         </div>
@@ -44,76 +48,202 @@
     <script src="./js/playVideo.js"></script>
     <script>
       $(document).ready(function () {
+        // 初始化轮播列表
+        var pics = [
+          { src: "./images/loop1.jpg", delay: 3 },
+          { src: "./images/loop2.jpg", delay: 6 },
+          { src: "./images/loop3.jpg", delay: 1 },
+        ];
+
+        insertToWrapper(pics);
+
+        function insertToWrapper(pics) {
+          var htmlStr = "";
+          for (var i = 0, pic; (pic = pics[i++]); ) {
+            htmlStr +=
+              '<div class="swiper-slide" >' +
+              '     <img draggable="false" src="' +
+              pic.src +
+              '" alt="' +
+              pic.src +
+              '" />\n' +
+              "   </div>";
+          }
+          $(".swiper-wrapper").html(htmlStr);
+        }
         // 轮播参数
         var lunbo_options = {
           // 轮播图的方向，也可以是vertical方向
           direction: "horizontal",
           // 自动播放时间
-          autoplay: {
-            autoplay: false,
-            // 时间间隔
-            delay: 3000,
-          },
-          // 播放的速度
+          autoplay: false,
           speed: 2000,
           centeredSlides: true, //页面居中
-          // pagination: {
-          //   el: ".swiper-pagination",
-          // },
-          // navigation: {
-          //   nextEl: ".swiper-button-next",
-          //   prevEl: ".swiper-button-prev",
-          // },
-          on: {
-            reachEnd: function () {
-              // 停止轮播
-              swiper.autoplay.stop();
-              setTimeout(function () {
-                // 切换到右边视频
-                slideContentBox("right");
-                // 切换视频播放
-                playVideo()
-              }, lunbo_options.autoplay.delay + lunbo_options.speed);
-            },
-          },
         };
 
         // 播放列表
-        var playlist = ["/videos/1.mp4", "/videos/2.mp4"];
+        var h = location.href;
+        var vids = [h + "videos/1.mp4", h + "videos/2.mp4"];
+
         // 视频对象
-        var vid = new PlayVideo("myVideo",playlist);
+        var vid = new PlayVideo("myVideo", vids);
+        vid.reset();
         //轮播对象
         var swiper = new Swiper(".swiper-container", lunbo_options);
 
         // 左右切换函数
-        function slideContentBox(direction) {
-          // 切换到右边
-          if (direction === "right")
+        var slideContentBox = {
+          // 该参数显示目前在第几屏幕
+          currentIndex: 0,
+          left: function () {
+            this.currentIndex = 0;
+            $(".content-box").css("transform", "translateX(0)");
+          },
+          right: function () {
+            this.currentIndex = 1;
             $(".content-box").css("transform", "translateX(-50%)");
-          else $(".content-box").css("transform", "translateX(0)");
-        }
+          },
+        };
 
-        // 开始播放
-        function playVideo() {
-          // 切换视频播放，切换过程2s
-          setTimeout(function () {
-            vid.play()
-          }, 2000);
-        }
+        // 根据不同延长时间播放图片
+        var autoPlay = {
+          // 手动点击后，暂停播放的时间
+          timeout: 10,
+          isPlaying: function () {
+            return Boolean(this.timer);
+          },
+          timer: null,
+          itemTimer: null,
+          start: function () {
+            // 若正在播放视频，再直接放过
+            if (slideContentBox.currentIndex === 1) return;
+            // 切换轮播，
+            this.go();
+          },
+          clearTimer: function () {
+            if (this.timer) clearTimeout(this.timer);
+            if (this.itemTimer) clearTimeout(this.itemTimer);
+            this.timer = null;
+            this.itemTimer = null;
+          },
+          go: function () {
+            this.itemTimer = setTimeout(function () {
+              operator.next();
+              if (slideContentBox.currentIndex === 0) autoPlay.go();
+            }, pics[swiper.realIndex].delay * 1000 + lunbo_options.speed);
+          },
+          stop: function () {
+            // 切换轮播，
+            this.clearTimer();
+            this.timer = setTimeout(this.start.bind(this), this.timeout * 1000);
+          },
+        };
+
+        autoPlay.start();
 
         // 播放列表完后，切回左边
         vid.onEnd = function () {
-          slideContentBox("left");
+          slideContentBox.left();
           // 切换回第一张
-          swiper.slideTo(0,0)
+          swiper.slideTo(0, 0);
+          $(".button-prev").addClass("hide");
+          resetVid();
+        };
+
+        function resetVid() {
           // 切换过程2s
           setTimeout(function () {
             // 重置视频
-            vid.reset()
-            // 切换轮播，
-            swiper.autoplay.start();
+            vid.reset();
+            // 如果在倒计时，侧倒计时结束再自动播放轮播图，否则立即自动播放
+            autoPlay.isPlaying() && autoPlay.start();
           }, 2000);
+        }
+
+        var operator = {
+          pics: {
+            isFirst: function () {
+              return swiper.isBeginning;
+            },
+            isEnd: function () {
+              return swiper.isEnd;
+            },
+            prev: function () {
+              // 是否第一张
+              if (this.isFirst()) return;
+              // 控制样式
+              if (swiper.realIndex - 1 === 0)
+                $(".button-prev").addClass("hide");
+              swiper.slidePrev();
+            },
+            next: function () {
+              if (this.isFirst()) $(".button-prev").removeClass("hide");
+              swiper.slideNext();
+            },
+          },
+          vids: {
+            isFirst: function () {
+              return vid.isFirst();
+            },
+            isEnd: function () {
+              return vid.isLast();
+            },
+            prev: function () {
+              // 视频第一个的话，要切回图片
+              if (this.isFirst()) {
+                slideContentBox.left();
+                vid.stop();
+                resetVid();
+              } else {
+                vid.playPrev();
+              }
+            },
+            next: function () {
+              vid.stop();
+              vid.playNext();
+            },
+          },
+          prev: function () {
+            // 图片是否播放完毕
+            if (slideContentBox.currentIndex === 1) {
+              this.vids.prev();
+            } else {
+              this.pics.prev();
+            }
+          },
+          timer: null,
+          next: function () {
+            if (slideContentBox.currentIndex === 1) {
+              this.timer && clearTimeout(this.timer);
+              // 已经在视频页
+              this.vids.next();
+            } else if (this.pics.isEnd()) {
+              // 不在视频页，切换到右边视频
+              slideContentBox.right();
+              // 切换视频播放
+              // 切换视频播放，切换过程2s
+              var self = this;
+              this.timer = setTimeout(function () {
+                vid.play();
+                self.timer = null;
+              }, 2000);
+            } else {
+              this.pics.next();
+            }
+          },
         };
+
+        // 上一张
+        $(".button-prev").on("click tap", function () {
+          autoPlay.stop();
+          operator.prev();
+        });
+
+        // 下一张
+        $(".button-next").on("click tap", function () {
+          autoPlay.stop();
+          operator.next();
+        });
       });
     </script>
   </body>

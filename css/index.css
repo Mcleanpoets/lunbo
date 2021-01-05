@@ -38,6 +38,47 @@ img {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  position: relative;
+}
+.container .operator {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  padding: 0 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.container .operator >a {
+  padding: 50px;
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.5);
+  transition: opacity 0.5s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.container .operator >a:active {
+  background-color: #fff;
+  box-shadow: 0 0 10px 10px #89c7da;
+}
+.container .operator .button-prev {
+  background-image: url("../images/left.png");
+  background-repeat: no-repeat;
+  background-size: 40%;
+  background-position: center center;
+}
+.container .operator .button-next {
+  background-image: url("../images/right.png");
+  background-repeat: no-repeat;
+  background-size: 40%;
+  background-position: center center;
+}
+.container .operator .hide {
+  opacity: 0;
 }
 .container .content-box {
   width: 200%;
@@ -54,8 +95,8 @@ img {
 }
 .container .content-box .swiper-container .swiper-slide {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
 .container .content-box .swiper-container .swiper-slide img {
   width: 100%;
@@ -64,6 +105,6 @@ img {
   width: 50%;
   height: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }

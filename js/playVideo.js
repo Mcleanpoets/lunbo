@@ -15,15 +15,7 @@ function PlayVideo(idOfDom, filenames, isLoop) {
     // 是否循环播放，默认不自动
     this.isLoop = isLoop || false;
     // 初始化列表
-    this.playlist = getPlayList(filenames);
-
-    function getPlayList(filenames) {
-      var arr = [];
-      for (var i = 0, filename; (filename = filenames[i++]); ) {
-        arr.push(filename.replace(/^\.?\//, location.href));
-      }
-      return arr;
-    }
+    this.playlist = filenames;
   } else {
     // 如果没有播放列表
     throw new Error("没有播放列表！");
@@ -36,6 +28,23 @@ function PlayVideo(idOfDom, filenames, isLoop) {
  */
 PlayVideo.prototype.isLast = function () {
   return this.currentIndex + 1 >= this.playlist.length;
+};
+
+/**
+ * 是否第一个视频
+ * @returns {boolean}
+ */
+PlayVideo.prototype.isFirst = function () {
+  return this.currentIndex === 0;
+};
+
+/**
+ * 播放上一条
+ * @returns {boolean}
+ */
+PlayVideo.prototype.playPrev = function () {
+  if (this.isFirst()) return false;
+  this.play(this.currentIndex - 1);
 };
 
 /**
@@ -78,4 +87,8 @@ PlayVideo.prototype.play = function (index) {
   this.vid.play();
   // 播放完后
   this.vid.onended = this.playNext.bind(this);
+};
+
+PlayVideo.prototype.stop = function () {
+  this.vid.pause();
 };
